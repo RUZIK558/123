@@ -1,4 +1,5 @@
 extends RefCounted
+class_name WorldLogic
 ## WorldLogic — вспомогательные функции мира: эффекты из JSON, условные реплики.
 
 class EffectResult:

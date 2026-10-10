@@ -55,6 +55,8 @@ func setup(mid: String, data: Dictionary, after_events: Array = []) -> void:
 	m_hp = m_max_hp
 
 func _ready() -> void:
+	z_index = 150
+	move_to_front()
 	_font = preload("res://fonts/main_font.ttf")
 	_tw = preload("res://scripts/typewriter_text.gd").new()
 	add_child(_tw)

@@ -54,4 +54,16 @@ func _draw() -> void:
 	if text.is_empty():
 		return
 	var vis := text.substr(0, int(shown))
-	draw_multiline_string(_font, rect.position + Vector2(0, font_size), vis, HORIZONTAL_ALIGNMENT_LEFT, rect.size.x - 4, font_size, color)
+	var lines_arr := vis.split("\n")
+var total := text.split("\n")
+var y := rect.position.y + font_size
+var consumed := 0
+for li in range(total.size()):
+var full := total[li]
+var remain := int(shown) - consumed
+var part := full if remain >= full.len() else full.substr(0, maxi(remain, 0))
+consumed += full.len() + 1
+draw_string(_font, Vector2(rect.position.x, y), part, HORIZONTAL_ALIGNMENT_LEFT, rect.size.x - 4, font_size, color)
+y += font_size + 4
+if remain <= 0:
+break

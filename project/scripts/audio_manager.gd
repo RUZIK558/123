@@ -23,7 +23,7 @@ func _ready() -> void:
 
 # ---------- Синтез ----------
 
-func _tone(freq: float, dur: float, vol: float = 0.5, type: int = 0, attack: float = 0.01) -> AudioStreamSample:
+func _tone(freq: float, dur: float, vol: float = 0.5, type: int = 0, attack: float = 0.01) -> AudioStreamWAV:
 	var n := int(SR * dur)
 	var data := PackedFloat32Array()
 	data.resize(n)
@@ -40,17 +40,17 @@ func _tone(freq: float, dur: float, vol: float = 0.5, type: int = 0, attack: flo
 		data[i] = s * env * vol
 	return _make_stream(data)
 
-func _make_stream(data: PackedFloat32Array) -> AudioStreamSample:
+func _make_stream(data: PackedFloat32Array) -> AudioStreamWAV:
 	var pcm := PackedByteArray()
-	pcm.resize(data.size() * 4)
+	pcm.resize(data.size() * 2)
 	for i in range(data.size()):
 		var v := clampi(int(data[i] * 32767.0), -32768, 32767)
-		pcm.encode_s32(i * 4, v)
-	var stream := AudioStreamSample.new()
-	stream.format = AudioStreamSample.FORMAT_32_BITS
+		pcm.encode_s16(i * 2, v)
+	var stream := AudioStreamWAV.new()
+	stream.format = AudioStreamWAV.FORMAT_16_BITS
 	stream.data = pcm
 	stream.mix_rate = SR
-	stream.stereo_interleave = AudioStreamSample.INTERLEAVE_LRLR
+	stream.stereo = true
 	return stream
 
 func play_note(freq: float, dur: float, vol: float = 0.4, type: int = 0) -> void:
@@ -120,7 +120,7 @@ func stop_music() -> void:
 	_music_player.stop()
 	_current_track = ""
 
-func _render_pattern(pat: Dictionary) -> AudioStreamSample:
+func _render_pattern(pat: Dictionary) -> AudioStreamWAV:
 	var bpm: float = pat.get("bpm", 100.0)
 	var beats: Array = pat.get("beats", [])
 	var bass: Array = pat.get("bass", [])
