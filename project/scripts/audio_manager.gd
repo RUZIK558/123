@@ -122,8 +122,8 @@ func stop_music() -> void:
 
 func _render_pattern(pat: Dictionary) -> AudioStreamWAV:
 	var bpm: float = pat.get("bpm", 100.0)
-	var beats: Array = pat.get("beats", [])
-	var bass: Array = pat.get("bass", [])
+	var beats: Array = [] + pat.get("beats", [])
+	var bass: Array = [] + pat.get("bass", [])
 	var lead_type: int = pat.get("lead_type", 0)
 	var bass_type: int = pat.get("bass_type", 1)
 	var spb := 60.0 / bpm                # секунд на бит
@@ -139,13 +139,13 @@ func _render_pattern(pat: Dictionary) -> AudioStreamWAV:
 		var beat_f := t / spb
 		var bi := int(floor(beat_f)) % maxi(len(beats), 1)
 		var bs := int(floor(beat_f)) % maxi(len(bass), 1)
-		var frac := beat_f - floor(beat_f)
+		var frac: float = beat_f - floor(beat_f)
 
 		# мелодия
 		var note_midi: float = beats[bi] if len(beats) > 0 else 0.0
 		var s_lead := 0.0
 		if note_midi > 0:
-			var f := midi_to_hz.call(note_midi)
+			var f: float = midi_to_hz.call(note_midi)
 			var env := clampf(minf(frac * 12.0, (1.0 - frac) * 6.0), 0.0, 1.0)
 			var ph := fposmod(f * t, 1.0)
 			match lead_type:
@@ -158,7 +158,7 @@ func _render_pattern(pat: Dictionary) -> AudioStreamWAV:
 		var b_midi: float = bass[bs] if len(bass) > 0 else 0.0
 		var s_bass := 0.0
 		if b_midi > 0:
-			var fb := midi_to_hz.call(b_midi)
+			var fb: float = midi_to_hz.call(b_midi)
 			var envb := clampf(minf(frac * 20.0, (1.0 - frac) * 4.0), 0.0, 1.0)
 			var phb := fposmod(fb * t, 1.0)
 			match bass_type:
@@ -251,3 +251,5 @@ func _get_pattern(track: String) -> Dictionary:
 				"bass": [33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33],
 			}
 	return {}
+
+func type_tick() -> void: text_blip()

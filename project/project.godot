@@ -13,6 +13,7 @@ boot_splash/bg_color=Color(0, 0, 0, 1)
 
 [autoload]
 
+Bootstrap="*res://scripts/bootstrap.gd"
 GameState="*res://scripts/game_state.gd"
 DialogueDB="*res://scripts/dialogue_db.gd"
 DataLoader="*res://scripts/data_loader.gd"
@@ -24,8 +25,9 @@ window/size/viewport_width=640
 window/size/viewport_height=360
 window/size/window_width_override=1280
 window/size/window_height_override=720
+window/size/resizable=true
 window/stretch/mode="canvas"
-window/stretch/aspect="keep"
+window/stretch/aspect="expand"
 
 [input]
 

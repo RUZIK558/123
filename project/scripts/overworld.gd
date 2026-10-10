@@ -512,7 +512,9 @@ func _process(delta: float) -> void:
 	queue_redraw()
 
 func clampv(p: Vector2) -> Vector2:
-	return Vector2(clampf(p.x, 14, VIEW.x - 14), clampf(p.y, 20, VIEW.y - 14))
+	var vs := maxf_size(get_viewport_rect().size, VIEW)
+	var ox := maxf((vs.x - VIEW.x) * 0.5, 0.0)
+	return Vector2(clampf(p.x, 14 + ox, vs.x - 14 - ox), clampf(p.y, 20, vs.y - 14))
 
 func _roll_encounter() -> void:
 	var encs: Array = loc_data.get("encounters", [])
@@ -532,11 +534,12 @@ func _roll_encounter() -> void:
 # ---------------- отрисовка ----------------
 
 func _draw() -> void:
+	var vs := maxf_size(get_viewport_rect().size, VIEW)
 	var floor_tex: Texture2D = _theme_tiles.get("floor")
 	var wall_tex: Texture2D = _theme_tiles.get("wall")
-	for y in range(int(VIEW.y / TILE) + 1):
-		for x in range(int(VIEW.x / TILE) + 1):
-			var is_border := x <= 0 or y <= 0 or (x + 1) * TILE >= VIEW.x or (y + 1) * TILE >= VIEW.y
+	for y in range(int(vs.y / TILE) + 1):
+		for x in range(int(vs.x / TILE) + 1):
+			var is_border := x <= 0 or y <= 0 or (x + 1) * TILE >= vs.x or (y + 1) * TILE >= vs.y
 			var tex := wall_tex if is_border else floor_tex
 			if tex:
 				draw_texture_rect(tex, Rect2(x * TILE, y * TILE, TILE, TILE), false)
@@ -562,12 +565,12 @@ func _draw() -> void:
 			draw_string(_font, n.position + Vector2(-14, 4), str(ex.get("label", "->")), HORIZONTAL_ALIGNMENT_LEFT, -1, 10, col)
 			draw_rect(Rect2(n.position - Vector2(12, 6), Vector2(24, 12)), col, false, 1.0)
 
-	draw_rect(Rect2(0, 0, VIEW.x, 14), Color(0, 0, 0, 0.6), true)
+	draw_rect(Rect2(0, 0, vs.x, 14), Color(0, 0, 0, 0.6), true)
 	draw_string(_font, Vector2(8, 11), str(loc_data.get("name", "")), HORIZONTAL_ALIGNMENT_LEFT, -1, 10, Color(0.9, 0.9, 0.9))
-	draw_string(_font, Vector2(VIEW.x - 230, 11), "LV%d HP%d/%d $%d ОСК:%d" % [GameState.lv, GameState.hp, GameState.max_hp, GameState.gold, GameState.memory_shards_found()], HORIZONTAL_ALIGNMENT_RIGHT, 222, 10, Color(1, 0.9, 0.5))
+	draw_string(_font, Vector2(vs.x - 230, 11), "LV%d HP%d/%d $%d ОСК:%d" % [GameState.lv, GameState.hp, GameState.max_hp, GameState.gold, GameState.memory_shards_found()], HORIZONTAL_ALIGNMENT_RIGHT, 222, 10, Color(1, 0.9, 0.5))
 
 	if shop_open and not shop_stock.is_empty():
-		var rect := Rect2(380, 40, 250, 30 + shop_stock.size() * 18)
+		var rect := Rect2(vs.x - 270, 40, 250, 30 + shop_stock.size() * 18)
 		draw_rect(rect, Color(0, 0, 0, 0.94), true)
 		draw_rect(rect, Color.WHITE, false, 2.0)
 		draw_string(_font, Vector2(rect.position.x + 10, rect.position.y + 18), "ВРЕН: ТОВАРЫ (G: %d)" % GameState.gold, HORIZONTAL_ALIGNMENT_LEFT, -1, 12, Color(1, 0.85, 0.2))
@@ -606,4 +609,4 @@ func _draw() -> void:
 			draw_string(_font, Vector2(rect.position.x + 12, rect.position.y + 74), seq_fail_msg, HORIZONTAL_ALIGNMENT_LEFT, -1, 11, Color(1, 0.4, 0.4))
 
 	if fade > 0.02:
-		draw_rect(Rect2(Vector2.ZERO, VIEW), Color(0, 0, 0, fade), true)
+		draw_rect(Rect2(Vector2.ZERO, vs), Color(0, 0, 0, fade), true)

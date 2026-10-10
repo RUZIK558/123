@@ -92,18 +92,18 @@ func _start_intro() -> void:
 	)
 
 func _draw() -> void:
-	draw_rect(Rect2(Vector2.ZERO, VIEW), Color.BLACK)
+	var vs := get_viewport_rect().size
+	draw_rect(Rect2(Vector2.ZERO, vs), Color.BLACK)
 	# заголовок
 	var title := "LowerTale"
 	var ts := 48.0
-	draw_string(_font, Vector2(0, 90), title, HORIZONTAL_ALIGNMENT_CENTER, VIEW.x, ts, Color.WHITE)
-	draw_string(_font, Vector2(0, 118), "* сказание о тех, кто пал вниз *", HORIZONTAL_ALIGNMENT_CENTER, VIEW.x, 12, Color(0.7, 0.7, 0.7))
+	draw_string(_font, Vector2(0, 90), title, HORIZONTAL_ALIGNMENT_CENTER, vs.x, ts, Color.WHITE)
+	draw_string(_font, Vector2(0, 118), "* сказание о тех, кто пал вниз *", HORIZONTAL_ALIGNMENT_CENTER, vs.x, 12, Color(0.7, 0.7, 0.7))
 	# падающая душа
 	if _mode == "menu":
 		if ResourceLoader.exists("res://sprites/soul_red.png"):
-			var spr := load("res://sprites/soul_red.png")
-			spr.centered = true
-			draw_texture(spr, _soul_pos)
+			var spr: Texture2D = load("res://sprites/soul_red.png")
+			draw_texture(spr, _soul_pos - spr.get_size() * 0.5)
 	# меню
 	for i in _items.size():
 		var col := Color.WHITE if i == _index and _mode == "menu" else Color(0.55, 0.55, 0.55)
@@ -116,16 +116,17 @@ func _draw() -> void:
 				draw_texture(load("res://sprites/heart_ui.png"), Vector2(x - 24, 290))
 	# настройки
 	if _mode == "settings":
-		draw_rect(Rect2(140, 150, 360, 120), Color(0.08, 0.08, 0.08))
-		draw_rect(Rect2(140, 150, 360, 120), Color.WHITE, false, 2)
+		var sw := maxf(vs.x, 640.0)
+		draw_rect(Rect2((sw - 360) * 0.5, 150, 360, 120), Color(0.08, 0.08, 0.08))
+		draw_rect(Rect2((sw - 360) * 0.5, 150, 360, 120), Color.WHITE, false, 2)
 		for j in _settings.size():
 			var c := Color.WHITE if j == _settings_index else Color(0.6, 0.6, 0.6)
-			var txt := _settings[j]
+			var txt: String = str(_settings[j])
 			if j == 0:
 				var lvl := int(round((0.1 - GameState.text_speed) * 100.0))
 				txt += ": " + ">".repeat(clampi(lvl, 1, 9))
-			draw_string(_font, Vector2(170, 185 + j * 30), txt, HORIZONTAL_ALIGNMENT_LEFT, 320, 13, c)
+			draw_string(_font, Vector2((sw - 360) * 0.5 + 30, 185 + j * 30), txt, HORIZONTAL_ALIGNMENT_LEFT, 320, 13, c)
 	# интро
 	if _mode == "intro":
-		draw_string(_font, Vector2(0, 330), "[Z] продолжить", HORIZONTAL_ALIGNMENT_CENTER, VIEW.x, 11, Color(0.5, 0.5, 0.5))
-	draw_string(_font, Vector2(0, 352), "© LowerTale Team — сделано в Godot 4", HORIZONTAL_ALIGNMENT_CENTER, VIEW.x, 9, Color(0.4, 0.4, 0.4))
+		draw_string(_font, Vector2(0, 330), "[Z] продолжить", HORIZONTAL_ALIGNMENT_CENTER, vs.x, 11, Color(0.5, 0.5, 0.5))
+	draw_string(_font, Vector2(0, vs.y - 8), "© LowerTale Team — сделано в Godot 4", HORIZONTAL_ALIGNMENT_CENTER, vs.x, 9, Color(0.4, 0.4, 0.4))

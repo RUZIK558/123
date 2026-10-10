@@ -40,7 +40,7 @@ func _process(delta: float) -> void:
 	# паузы на знаках препинания
 	if before < text.length():
 		var ch := text[before]
-		if ch in [".", "!", "?", ",", ";", ":", "…"]:
+		if ch in [".", "!", "?", ",", ";", ":", "\u2026"]:
 			shown -= delta * speed * 0.8
 	if int(shown) > before and before < text.length():
 		AudioManager.type_tick()
@@ -53,17 +53,15 @@ func _process(delta: float) -> void:
 func _draw() -> void:
 	if text.is_empty():
 		return
-	var vis := text.substr(0, int(shown))
-	var lines_arr := vis.split("\n")
-var total := text.split("\n")
-var y := rect.position.y + font_size
-var consumed := 0
-for li in range(total.size()):
-var full := total[li]
-var remain := int(shown) - consumed
-var part := full if remain >= full.len() else full.substr(0, maxi(remain, 0))
-consumed += full.len() + 1
-draw_string(_font, Vector2(rect.position.x, y), part, HORIZONTAL_ALIGNMENT_LEFT, rect.size.x - 4, font_size, color)
-y += font_size + 4
-if remain <= 0:
-break
+	var total: PackedStringArray = text.split("\n")
+	var y := rect.position.y + font_size
+	var consumed := 0
+	for li in range(total.size()):
+		var full: String = total[li]
+		var remain := int(shown) - consumed
+		var part := full if remain >= full.length() else full.substr(0, maxi(remain, 0))
+		draw_string(_font, Vector2(rect.position.x, y), part, HORIZONTAL_ALIGNMENT_LEFT, rect.size.x - 4.0, font_size, color)
+		y += font_size + 4
+		consumed += full.length() + 1
+		if remain <= 0:
+			break

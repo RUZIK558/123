@@ -47,9 +47,10 @@ func _process(delta: float) -> void:
 	queue_redraw()
 
 func _draw() -> void:
-	draw_rect(Rect2(Vector2.ZERO, VIEW), Color.BLACK)
+	var vs := maxf_size(get_viewport_rect().size, VIEW)
+	draw_rect(Rect2(Vector2.ZERO, vs), Color.BLACK)
 	var col := Color(1.0, 0.85, 0.4) if route_name == "TRUE PACIFIST" else (Color(0.9, 0.2, 0.2) if route_name == "GENOCIDE" else Color.WHITE)
-	draw_string(_font, Vector2(0, 60), route_name, HORIZONTAL_ALIGNMENT_CENTER, VIEW.x, 28, col)
-	draw_string(_font, Vector2(0, 90), ("* КОНЕЦ *" if _done else ""), HORIZONTAL_ALIGNMENT_CENTER, VIEW.x, 12, Color(0.7, 0.7, 0.7))
+	draw_string(_font, Vector2(0, 60), route_name, HORIZONTAL_ALIGNMENT_CENTER, vs.x, 28, col)
+	draw_string(_font, Vector2(0, 90), ("* КОНЕЦ *" if _done else ""), HORIZONTAL_ALIGNMENT_CENTER, vs.x, 12, Color(0.7, 0.7, 0.7))
 	if _done:
-		draw_string(_font, Vector2(0, 330), "[Z] — в титульный экран", HORIZONTAL_ALIGNMENT_CENTER, VIEW.x, 12, Color(0.6, 0.6, 0.6))
+		draw_string(_font, Vector2(0, 330), "[Z] — в титульный экран", HORIZONTAL_ALIGNMENT_CENTER, vs.x, 12, Color(0.6, 0.6, 0.6))
